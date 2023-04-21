@@ -1,7 +1,10 @@
 import { useState, useEffect } from "react"
+import {BrowserRouter as Router, Route, Routes} from "react-router-dom"
 import Header from "./components/Header";
 import Tasks from "./components/Tasks";
 import AddTask from "./components/AddTask";
+import Footer from "./components/Footer";
+import About from "./components/About";
 
 
 function App() {
@@ -29,17 +32,43 @@ function App() {
 
     return data
   }
+
+  //Fetch Task
+
+  async function fetchTask(id) {
+    const res = await fetch(
+      `http://localhost:5000/tasks/${id}`
+      )
+
+    const data = await res.json()
+
+    return data
+  }
+
     //Add Task
-    function addTask(task) {
-      const id = Math.floor(Math.random() * 1000) + 1
-      const newTask = {
-        id, 
-        ...task
-      }
-      setTasks([
-        ...tasks,
-        newTask
-      ])
+    async function addTask(task) {
+      const res = await fetch(
+        'http://localhost:5000/tasks',
+         {
+          method: "POST",
+          headers: {
+            'Content-type': 'application/json'
+          },
+          body: JSON.stringify(task)
+      })
+
+      const data = await res.json()
+
+      setTasks([...tasks, data])
+      // const id = Math.floor(Math.random() * 1000) + 1
+      // const newTask = {
+      //   id, 
+      //   ...task
+      // }
+      // setTasks([
+      //   ...tasks,
+      //   newTask
+      // ])
     }
 
     //Delete a task
@@ -57,12 +86,30 @@ function App() {
     }
 
     //Toggle Reminder
-    function toggleReminder(id) {
+    async function toggleReminder(id) {
+      const taskToToggle = await fetchTask(id)
+      const updTask = {
+        ...taskToToggle,
+        reminder: !taskToToggle.reminder
+      }
+
+      const res = await fetch(
+        `http://localhost:5000/tasks/${id}`,
+        {
+          method: "PUT",
+          headers: {
+            'Content-type': 'application/json'
+          },
+          body: JSON.stringify(updTask)
+        })
+
+        const data = await res.json()
+
       setTasks(tasks.map(task => {
         if (task.id === id) {
           return {
             ...task,
-            reminder: !task.reminder
+            reminder: data.reminder
           }
         } else {
           return task
@@ -72,12 +119,17 @@ function App() {
     
     
   return (
+    <Router>
     <div className="container">
       <Header onAdd={() => 
       setShowAddTask(!showAddTask)}
       showAdd={showAddTask}
       />
-      {showAddTask && <AddTask onAdd={addTask} />}
+      <Routes>
+      <Route 
+      path="/"  
+      element={<>
+        {showAddTask && <AddTask onAdd={addTask} />}
       {tasks.length > 0 ?
       (<Tasks 
       tasks={tasks} 
@@ -86,7 +138,13 @@ function App() {
       />) : (
         "No Tasks Available"
         )}
+        </>}
+      />
+      <Route path="/about" element={<About />}/>
+      </Routes>
+      <Footer />
     </div>
+    </Router>
   );
 }
 
