@@ -1,6 +1,7 @@
+import { useState } from "react"
 import Header from "./components/Header";
 import Tasks from "./components/Tasks";
-import { useState } from "react"
+import AddTask from "./components/AddTask";
 
 
 function App() {
@@ -34,11 +35,33 @@ function App() {
         })
       })
     }
+
+    //Toggle Reminder
+    function toggleReminder(id) {
+      setTasks(tasks.map(task => {
+        if (task.id === id) {
+          return {
+            ...task,
+            reminder: !task.reminder
+          }
+        } else {
+          return task
+        }
+      }))
+    }
   
   return (
     <div className="container">
       <Header />
-      {tasks.length > 0 ?<Tasks tasks={tasks} onDelete={deleteTask}/>: "No Tasks Available"}
+      <AddTask />
+      {tasks.length > 0 ?
+      (<Tasks 
+      tasks={tasks} 
+      onDelete={deleteTask}
+      onToggle={toggleReminder}
+      />) : (
+        "No Tasks Available"
+        )}
     </div>
   );
 }

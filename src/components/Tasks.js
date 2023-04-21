@@ -1,6 +1,6 @@
 import Task from "./Task"
 
-export default function Tasks({ tasks, onDelete}) {
+export default function Tasks({ tasks, onDelete, onToggle}) {
    
     
     return (
@@ -8,9 +8,9 @@ export default function Tasks({ tasks, onDelete}) {
         {tasks.map(task => (
             <Task 
             key={task.id} 
-            id={task.id}
             task={task}
             onDelete={onDelete}
+            onToggle={onToggle}
             />))}
         </>
     )
