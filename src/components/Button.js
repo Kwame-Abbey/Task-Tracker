@@ -2,12 +2,10 @@ import PropTypes from 'prop-types'
 
 
 export default function Button({ color, text, onClick}) {
-   function handleClick() {
-    console.log("Click")
-   }
+   
 
    return <button 
-    onClick={handleClick}
+    onClick={() => onClick()}
     style={{backgroundColor: color}}
     className='btn'>{text}</button>
 }
